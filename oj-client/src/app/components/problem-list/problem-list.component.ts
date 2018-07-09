@@ -1,12 +1,12 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { Problem } from "../../models/problem.model";
-import { PROBLEMS } from "../../mock-problems";
-
+import { Subscription } from 'rxjs/Subscription';
 
 @Component({
   selector: 'app-problem-list',
   template: `
   <div class="container">
+      <app-new-problem></app-new-problem>
       <div class="list-group">
           <a class="list-group-item" *ngFor="let problem of problems" [routerLink]="['/problems', problem.id]">
               <span class="{{'pull-left label difficulty diff-' + problem.difficulty.toLocaleLowerCase()}}">{{problem.difficulty}}</span>
@@ -49,19 +49,21 @@ import { PROBLEMS } from "../../mock-problems";
 
     `]
 })
+
 export class ProblemListComponent implements OnInit {
 
-  problems: Problem[];
+  problems: Problem[] = [];
+  SubscriptionProblems: Subscription;
 
   constructor(@Inject("data") private data) { }
 
   ngOnInit() {
     this.getProblems();
-    console.log(this.problems);
   }
 
   getProblems(): void {
-    this.problems = this.data.getProblems();
+    this.SubscriptionProblems = this.data.getProblems()
+                                          .subscribe(problems => this.problems = problems);
   }
 
 }
